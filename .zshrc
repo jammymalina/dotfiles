@@ -1,1 +1,0 @@
-/home/jakub/.zshrc
