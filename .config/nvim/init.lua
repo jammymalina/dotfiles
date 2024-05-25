@@ -121,11 +121,38 @@ require("lazy").setup({
 	{
 		"nvimtools/none-ls.nvim",
 	},
+	{ "akinsho/toggleterm.nvim", version = "*", config = true },
 })
 
 vim.cmd("colorscheme tokyonight")
 
 require("lualine").setup()
+
+local lsp_formatting = function(bufnr)
+	vim.lsp.buf.format({
+		bufnr = bufnr,
+		async = true,
+		timeout_ms = 5000,
+		filter = function(client)
+			return client.name == "null-ls" or client.name == "rust_analyzer"
+		end,
+	})
+end
+
+local fmt_augroup = vim.api.nvim_create_augroup("LspFormatting", {})
+
+local fmt_on_attach = function(client, bufnr)
+	if client.supports_method("textDocument/formatting") then
+		vim.api.nvim_clear_autocmds({ group = fmt_augroup, buffer = bufnr })
+		vim.api.nvim_create_autocmd("BufWritePre", {
+			group = fmt_augroup,
+			buffer = bufnr,
+			callback = function()
+				lsp_formatting(bufnr)
+			end,
+		})
+	end
+end
 
 local lspconfig = require("lspconfig")
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
@@ -142,6 +169,7 @@ lspconfig.rust_analyzer.setup({
 	settings = {
 		["rust-analyzer"] = {},
 	},
+	on_attach = fmt_on_attach,
 })
 lspconfig.golangci_lint_ls.setup({
 	capabilities = capabilities,
@@ -181,7 +209,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		vim.keymap.set({ "n", "v" }, "<space>ca", vim.lsp.buf.code_action, opts)
 		vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
 		vim.keymap.set("n", "<space>f", function()
-			vim.lsp.buf.format({ async = true })
+			vim.lsp.buf.format({ async = true, timeout_ms = 5000 })
 		end, opts)
 	end,
 })
@@ -196,35 +224,23 @@ local null_ls = require("null-ls")
 null_ls.setup({
 	sources = {
 		null_ls.builtins.completion.spell,
+		null_ls.builtins.diagnostics.buf,
 		null_ls.builtins.diagnostics.editorconfig_checker,
 		null_ls.builtins.diagnostics.staticcheck,
 		null_ls.builtins.diagnostics.terraform_validate,
 		null_ls.builtins.diagnostics.tidy,
+		null_ls.builtins.diagnostics.pylint,
+		null_ls.builtins.formatting.buf,
 		null_ls.builtins.formatting.gofumpt,
 		null_ls.builtins.formatting.goimports,
 		null_ls.builtins.formatting.goimports_reviser,
 		null_ls.builtins.formatting.prettierd,
 		null_ls.builtins.formatting.stylua,
 		null_ls.builtins.formatting.terraform_fmt,
+		null_ls.builtins.formatting.isort,
+		null_ls.builtins.formatting.black,
 	},
-	on_attach = function(client, bufnr)
-		if client.supports_method("textDocument/formatting") then
-			vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
-			vim.api.nvim_create_autocmd("BufWritePre", {
-				group = augroup,
-				buffer = bufnr,
-				callback = function()
-					vim.lsp.buf.format({
-						bufnr = bufnr,
-						async = false,
-						filter = function(client)
-							return client.name == "null-ls"
-						end,
-					})
-				end,
-			})
-		end
-	end,
+	on_attach = fmt_on_attach,
 })
 
 local cmp = require("cmp")
@@ -270,4 +286,8 @@ cmp.setup.cmdline(":", {
 		{ name = "cmdline" },
 	}),
 	matching = { disallow_symbol_nonprefix_matching = false },
+})
+
+require("toggleterm").setup({
+	open_mapping = [[<c-\>]],
 })
