@@ -165,11 +165,13 @@ lspconfig.tsserver.setup({
 })
 lspconfig.rust_analyzer.setup({
 	capabilities = capabilities,
-	-- Server-specific settings. See `:help lspconfig-setup`
 	settings = {
 		["rust-analyzer"] = {},
 	},
-	on_attach = fmt_on_attach,
+	on_attach = function(client, bufnr)
+		vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+		fmt_on_attach(client, bufnr)
+	end,
 })
 lspconfig.golangci_lint_ls.setup({
 	capabilities = capabilities,
