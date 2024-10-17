@@ -1,0 +1,32 @@
+configuration {
+  font: "MesloLGS Nerd Font 14";
+  line-margin: 10;
+
+  display-ssh:    "";
+  display-run:    "";
+  display-drun:   "";
+  display-window: "";
+  display-combi:  "";
+  show-icons:     true;
+
+  timeout {
+      action: "kb-cancel";
+      delay:  0;
+  }
+  filebrowser {
+      directories-first: true;
+      sorting-method:    "name";
+  }
+}
+
+@theme "~/.config/rofi/nord.rasi"
+
+listview {
+  lines: 12;
+  columns: 1;
+}
+
+window {
+  width: 30%;
+}
+
