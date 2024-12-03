@@ -12,5 +12,9 @@ function create_rust_app {
   cargo new --bin $1
   cd $1
   echo -e "\n[lints.clippy]\npedantic = \"warn\"\nnursery = \"warn\"" >> Cargo.toml
+  wget https://github.com/jammymalina/dotfiles/raw/refs/heads/master/.editorconfig
+  wget https://github.com/github/gitignore/raw/refs/heads/main/Rust.gitignore
+  mv Rust.gitignore .gitignore
+  sed -i '/^Cargo\.lock/s/^/# /' .gitignore
 }
 
