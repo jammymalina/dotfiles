@@ -166,7 +166,12 @@ lspconfig.tsserver.setup({
 lspconfig.rust_analyzer.setup({
 	capabilities = capabilities,
 	settings = {
-		["rust-analyzer"] = {},
+		["rust-analyzer"] = {
+			checkOnSave = {
+				allFeatures = true,
+				command = "clippy",
+			},
+		},
 	},
 	on_attach = function(client, bufnr)
 		vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
