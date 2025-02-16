@@ -157,6 +157,9 @@ end
 local lspconfig = require("lspconfig")
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
+lspconfig.clangd.setup({
+	capabilities = capabilities,
+})
 lspconfig.pyright.setup({
 	capabilities = capabilities,
 })
@@ -238,6 +241,7 @@ null_ls.setup({
 		null_ls.builtins.diagnostics.tidy,
 		null_ls.builtins.diagnostics.pylint,
 		null_ls.builtins.formatting.buf,
+		null_ls.builtins.formatting.clang_format,
 		null_ls.builtins.formatting.gofumpt,
 		null_ls.builtins.formatting.goimports,
 		null_ls.builtins.formatting.goimports_reviser,
