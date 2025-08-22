@@ -63,6 +63,7 @@ require("lazy").setup({
 		priority = 1000,
 		opts = {},
 	},
+	{ "echasnovski/mini.icons", version = "*" },
 	{
 		"nvim-lualine/lualine.nvim",
 		dependencies = { "nvim-tree/nvim-web-devicons" },
