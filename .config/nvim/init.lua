@@ -15,6 +15,11 @@ end
 
 vim.opt.rtp:prepend(lazypath)
 
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_node_provider = 0
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_ruby_provider = 0
+
 local options = {
 	backup = false, -- creates a backup file
 	clipboard = "unnamedplus", -- allows neovim to access the system clipboard
@@ -155,19 +160,18 @@ local fmt_on_attach = function(client, bufnr)
 	end
 end
 
-local lspconfig = require("lspconfig")
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-lspconfig.clangd.setup({
+vim.lsp.config("clangd", {
 	capabilities = capabilities,
 })
-lspconfig.pyright.setup({
+vim.lsp.config("pyright", {
 	capabilities = capabilities,
 })
-lspconfig.tsserver.setup({
+vim.lsp.config("tsserver", {
 	capabilities = capabilities,
 })
-lspconfig.rust_analyzer.setup({
+vim.lsp.config("rust_analyzer", {
 	capabilities = capabilities,
 	settings = {
 		["rust-analyzer"] = {
@@ -182,12 +186,14 @@ lspconfig.rust_analyzer.setup({
 		fmt_on_attach(client, bufnr)
 	end,
 })
-lspconfig.golangci_lint_ls.setup({
+vim.lsp.config("golangci_lint_ls", {
 	capabilities = capabilities,
 })
-lspconfig.gopls.setup({
+vim.lsp.config("gopls", {
 	capabilities = capabilities,
 })
+
+vim.lsp.enable({ "clangd", "pyright", "tsserver", "rust_analyzer", "golangci_lint_ls", "gopls" })
 
 vim.keymap.set("n", "<space>e", vim.diagnostic.open_float)
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
