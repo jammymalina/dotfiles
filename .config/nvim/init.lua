@@ -148,7 +148,7 @@ end
 local fmt_augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 
 local fmt_on_attach = function(client, bufnr)
-	if client.supports_method("textDocument/formatting") then
+	if client:supports_method("textDocument/formatting", { bufnr = bufnr }) then
 		vim.api.nvim_clear_autocmds({ group = fmt_augroup, buffer = bufnr })
 		vim.api.nvim_create_autocmd("BufWritePre", {
 			group = fmt_augroup,
